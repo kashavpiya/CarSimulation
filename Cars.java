@@ -85,7 +85,7 @@ public class Cars extends Application {
         Random rand = new Random();
    //     int rand_int1 = rand.nextInt(245) + 120; 
     //    System.out.println(rand_int1);
-        moveBCarTo(rand.nextInt(245) + 120,-20);
+        moveBCarTo(rand.nextInt(245) + 120,-100);
      
   
         
@@ -241,7 +241,7 @@ public class Cars extends Application {
     	final double cy = bCar.getBoundsInLocal().getHeight() / 2;
     	if (y -cy >= H) {
     		Random rand = new Random();
-        	bCar.relocate(rand.nextInt(245) + 120, -50);
+        	bCar.relocate(rand.nextInt(245) + 120, -100);
         } else {
         	bCar.relocate(x , y - cy);  
         }
