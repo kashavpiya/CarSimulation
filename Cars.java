@@ -1,4 +1,5 @@
 import java.io.FileInputStream;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import javafx.animation.AnimationTimer;
@@ -31,7 +32,8 @@ public class Cars extends Application {
     
     private static final String GAME_OVER = "https://www.flaticon.com/premium-icon/icons/svg/2066/2066796.svg";
     
-  //  private static final String GAME_OVER = "http://pngimg.com/uploads/game_over/game_over_PNG51.png";
+    private static final String BAD_CAR = "https://images-ext-1.discordapp.net/external/8m41qiXkILIWLUg495Ysx9OnVkKWDHdMcsnGnm1Urmc/https/img.icons8.com/officel/2x/truck-top-view.png";
+    
     private boolean crashed = false;
     private Image carImage;
     private Node  gCar;
@@ -41,6 +43,9 @@ public class Cars extends Application {
     
     private Image backImage2;
     private Node back2;
+    
+    private Image badCar;
+    private Node bCar;
     
     private Image gameOver;
     private Node over;
@@ -65,13 +70,22 @@ public class Cars extends Application {
       
         gameOver = new Image(GAME_OVER);
         over = new ImageView(gameOver);
-       
-        Group root = new Group(back, back2, gCar, over);
+        
+        badCar = new Image(BAD_CAR);
+        bCar = new ImageView(badCar);
+        bCar.setRotate(90);
+        
+        Group root = new Group(back, back2, gCar, bCar);
         
         moveGCarTo(W/2, 3 * H / 4);
         moveBgTo(0 , H/2);
         moveBg2To(0, -H/2);
         moveOverTo(W, H);
+        
+        Random rand = new Random();
+   //     int rand_int1 = rand.nextInt(245) + 120; 
+    //    System.out.println(rand_int1);
+        moveBCarTo(rand.nextInt(245) + 120,-20);
      
   
         
@@ -104,9 +118,9 @@ public class Cars extends Application {
                 }
             }
         });
-
+        
         stage.setScene(scene);
-       
+        
         stage.show();
 
         AnimationTimer timer = new AnimationTimer() {
@@ -123,12 +137,13 @@ public class Cars extends Application {
                 moveGCarBy(dx, dy);
                 moveBgBy(dx,-dy);
                 moveBg2By(dx, -dy);
-          //      moveBCarBy(0, 1);
+                moveBCarBy(0, -dy * 2);
             }
         };
         
-        	timer.start();
-        
+        		timer.start();
+        		
+        		
        
     }
    
@@ -171,7 +186,19 @@ public class Cars extends Application {
         moveBg2To(0, y);
     }
     
+    private void moveBCarBy(int dx, int dy) {
+        if (dx == 0 && dy == 0) return;
+        
+        if (dy < 0) return;
+        
+        final double cy = bCar.getBoundsInLocal().getHeight() / 2;
 
+        double x = bCar.getLayoutX() + dx;
+        double y = cy + bCar.getLayoutY() + dy;
+
+        moveBCarTo(x, y);
+    }
+    
     private void moveGCarTo(double x, double y) {
         final double cx = gCar.getBoundsInLocal().getWidth()  / 2;
         final double cy = gCar.getBoundsInLocal().getHeight() / 2;
@@ -210,6 +237,16 @@ public class Cars extends Application {
         }
     }
     
+    private void moveBCarTo(double x, double y) {        
+    	final double cy = bCar.getBoundsInLocal().getHeight() / 2;
+    	if (y -cy >= H) {
+    		Random rand = new Random();
+        	bCar.relocate(rand.nextInt(245) + 120, -50);
+        } else {
+        	bCar.relocate(x , y - cy);  
+        }
+     }
+    
     private void moveBg2To(double x, double y) {
         // final double cx = back.getBoundsInLocal().getWidth()  / 2;
          final double cy = back2.getBoundsInLocal().getHeight() / 2;
@@ -230,7 +267,7 @@ public class Cars extends Application {
     
     private boolean isOutOfBounds(double x) {
     	if (x > 384 || x < 128) {
-    		crashed = true;
+    		this.crashed = true;
     		return true;
     	}else {
     		return false;
@@ -238,7 +275,7 @@ public class Cars extends Application {
     }
     
     private void theEnd() throws InterruptedException{
-    	crashed = true;
+    	this.crashed = true;
     	
     	Alert alert = new Alert(AlertType.WARNING);
     	alert.setTitle("GAME OVER!");
