@@ -51,6 +51,12 @@ public class Cars extends Application {
     private Node over;
     
     private int count = 0;
+    private int count2 = 0;
+    
+    private double gCarX;
+    private double gCarY;
+    private double bCarX;
+    private double bCarY;
     
     boolean running, goNorth, goSouth, goEast, goWest;
 
@@ -75,7 +81,14 @@ public class Cars extends Application {
         bCar = new ImageView(badCar);
         bCar.setRotate(90);
         
+        
+        
+        
+        
+        
         Group root = new Group(back, back2, gCar, bCar);
+        
+        
         
         moveGCarTo(W/2, 3 * H / 4);
         moveBgTo(0 , H/2);
@@ -126,7 +139,8 @@ public class Cars extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                int dx = 0, dy = 0;
+                
+            	int dx = 0, dy = 0;
 
                 if (goNorth) dy -= 3;
                 if (goSouth) dy += 3;
@@ -138,6 +152,11 @@ public class Cars extends Application {
                 moveBgBy(dx,-dy);
                 moveBg2By(dx, -dy);
                 moveBCarBy(0, -dy * 2);
+                             
+                if (crashed == true) {
+                	stop();
+                }
+                
             }
         };
         
@@ -146,7 +165,7 @@ public class Cars extends Application {
         		
        
     }
-   
+    
 
     private void moveGCarBy(int dx, int dy) {
         if (dx == 0 && dy == 0) return;
@@ -156,6 +175,10 @@ public class Cars extends Application {
 
         double x = cx + gCar.getLayoutX() + dx;
         double y = cy + gCar.getLayoutY() + dy;
+        
+        this.gCarX = x;
+        this.gCarY = y;
+        
 
         moveGCarTo(x, 3 * H/4);
     }
@@ -195,6 +218,9 @@ public class Cars extends Application {
 
         double x = bCar.getLayoutX() + dx;
         double y = cy + bCar.getLayoutY() + dy;
+        
+        this.bCarX = x + 40;
+        this.bCarY = y;
 
         moveBCarTo(x, y);
     }
@@ -203,17 +229,18 @@ public class Cars extends Application {
         final double cx = gCar.getBoundsInLocal().getWidth()  / 2;
         final double cy = gCar.getBoundsInLocal().getHeight() / 2;
         
-        boolean accident = isOutOfBounds(x);
-        if (accident == true) {
-        	try {
-				theEnd();
+        	boolean accident = isOutOfBounds(x);
+        	if (accident == true) {
+        		try {
+        			offTheRoad();
 				
 		//		System.exit(0);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
+        		} catch (InterruptedException e) {
+        			// TODO Auto-generated catch block
+        			e.printStackTrace();
+        		}
+        	}
+        
         
         if (x - cx >= 0 &&
             x + cx <= W &&
@@ -227,6 +254,7 @@ public class Cars extends Application {
        // final double cx = back.getBoundsInLocal().getWidth()  / 2;
         final double cy = back.getBoundsInLocal().getHeight() / 2;
 
+        
      //   if (y - cy >= 0 &&
      //       y + cy <= H) {
         if (y -cy >= H) {
@@ -237,11 +265,26 @@ public class Cars extends Application {
         }
     }
     
-    private void moveBCarTo(double x, double y) {        
+    private void moveBCarTo(double x, double y)  {        
     	final double cy = bCar.getBoundsInLocal().getHeight() / 2;
+    	count2 += 1;
+        
+        if (count2 > 1) {
+        	boolean accident = isCrashed();
+    		if (accident == true) {
+    			try {
+					crashed();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+    		}
+        }
+    	
+    	
     	if (y -cy >= H) {
     		Random rand = new Random();
-        	bCar.relocate(rand.nextInt(245) + 120, -100);
+        	bCar.relocate(gCarX - 60, -100);
         } else {
         	bCar.relocate(x , y - cy);  
         }
@@ -274,7 +317,50 @@ public class Cars extends Application {
     	}
     }
     
-    private void theEnd() throws InterruptedException{
+    
+    private boolean isCrashed() {
+    	double xDiff = this.gCarX - this.bCarX;
+    	double yDiff = this.gCarY - this.bCarY;
+    	
+    	System.out.println(this.gCarX);
+    	System.out.println(this.bCarX);
+    	System.out.println(gCarY);
+    	System.out.println(bCarY);
+    	if (xDiff > -60 && xDiff < 84) {
+    		if (yDiff > -120 && yDiff < 120) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    private void crashed() throws InterruptedException{
+    	this.crashed = true;
+    	
+    	Alert alert = new Alert(AlertType.WARNING);
+    	alert.setTitle("GAME OVER!");
+    	alert.setHeaderText("You lost the game! Try again.");
+    	alert.setContentText("You just crashed!");
+    	
+    	alert.show();
+    	
+    	count += 1;
+    	
+    	if (count==2) {
+    		System.exit(0);
+    	}
+    	
+    }
+    
+    private void offTheRoad() throws InterruptedException{
     	this.crashed = true;
     	
     	Alert alert = new Alert(AlertType.WARNING);
@@ -287,7 +373,7 @@ public class Cars extends Application {
 
     	count += 1;
     	
-    	if (count == 100) {
+    	if (count==2) {
     		System.exit(0);
     	}
     	
