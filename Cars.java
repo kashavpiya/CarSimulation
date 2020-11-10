@@ -34,6 +34,11 @@ public class Cars extends Application {
     
     private static final String BAD_CAR = "https://images-ext-1.discordapp.net/external/8m41qiXkILIWLUg495Ysx9OnVkKWDHdMcsnGnm1Urmc/https/img.icons8.com/officel/2x/truck-top-view.png";
     
+    private static final String HACK = "https://icons.iconarchive.com/icons/iron-devil/ids-game-world/32/Danger-zone-icon.png";
+    
+    private Image hackImage;
+    private Node hacker;
+    
     private boolean crashed = false;
     private Image carImage;
     private Node  gCar;
@@ -44,6 +49,9 @@ public class Cars extends Application {
     private Image backImage2;
     private Node back2;
     
+    private Image backImage3;
+    private Node back3;
+    
     private Image badCar;
     private Node bCar;
     
@@ -53,10 +61,17 @@ public class Cars extends Application {
     private int count = 0;
     private int count2 = 0;
     
+    private int score = 0;
+    
+    private boolean hacked = false;
+    private int hackCount = 0;
+    
     private double gCarX;
     private double gCarY;
     private double bCarX;
     private double bCarY;
+    private double hackerX;
+    private double hackerY;
     
     boolean running, goNorth, goSouth, goEast, goWest;
 
@@ -73,7 +88,8 @@ public class Cars extends Application {
         
         backImage2 = new Image(BACK_IMAGE);
         back2 = new ImageView(backImage);
-      
+        
+        
         gameOver = new Image(GAME_OVER);
         over = new ImageView(gameOver);
         
@@ -81,12 +97,14 @@ public class Cars extends Application {
         bCar = new ImageView(badCar);
         bCar.setRotate(90);
         
+        hackImage = new Image(HACK);
+        hacker = new ImageView(hackImage);
+        hacker.resize(5, 5);
         
         
         
         
-        
-        Group root = new Group(back, back2, gCar, bCar);
+        Group root = new Group(back, back2, hacker, gCar, bCar);
         
         
         
@@ -95,11 +113,12 @@ public class Cars extends Application {
         moveBg2To(0, -H/2);
         moveOverTo(W, H);
         
+        
         Random rand = new Random();
    //     int rand_int1 = rand.nextInt(245) + 120; 
     //    System.out.println(rand_int1);
         moveBCarTo(rand.nextInt(245) + 120,-100);
-     
+        moveHackerTo(rand.nextInt(245)+120, 0);
   
         
         Scene scene = new Scene(root, W, H, Color.FORESTGREEN);
@@ -147,11 +166,14 @@ public class Cars extends Application {
                 if (goEast)  dx += 3;
                 if (goWest)  dx -= 3;
                 if (running) { dx *= 3; dy *= 3; }
+                if (hacked) { dx *= 2; dy *= 2; }
+
 
                 moveGCarBy(dx, dy);
                 moveBgBy(dx,-dy);
-                moveBg2By(dx, -dy);
-                moveBCarBy(0, -dy * 2);
+                moveBg2By(dx, -dy);                
+                moveBCarBy(0, -dy * 2);               
+                moveHackerBy(0, -dy);
                              
                 if (crashed == true) {
                 	stop();
@@ -225,6 +247,21 @@ public class Cars extends Application {
         moveBCarTo(x, y);
     }
     
+    private void moveHackerBy(int dx, int dy) {
+    	if (dx == 0 && dy == 0) return;
+        
+        if (dy < 0) return;
+        
+        final double cy = hacker.getBoundsInLocal().getHeight() / 2;
+
+        double x = hacker.getLayoutX() + dx;
+        double y = cy + hacker.getLayoutY() + dy;
+       
+        this.hackerX = x;
+        this.hackerY = y;
+
+        moveHackerTo(x, y);
+    }
     private void moveGCarTo(double x, double y) {
         final double cx = gCar.getBoundsInLocal().getWidth()  / 2;
         final double cy = gCar.getBoundsInLocal().getHeight() / 2;
@@ -284,7 +321,10 @@ public class Cars extends Application {
     	
     	if (y -cy >= H) {
     		Random rand = new Random();
-        	bCar.relocate(gCarX - 60, -100);
+        	bCar.relocate(rand.nextInt(245) + 120, -100);
+        	score += 1;
+        	if (this.hacked) { hackCount += 1;}
+        	
         } else {
         	bCar.relocate(x , y - cy);  
         }
@@ -317,6 +357,43 @@ public class Cars extends Application {
     	}
     }
     
+    private void moveHackerTo(double x, double y) {
+    	final double cy = hacker.getBoundsInLocal().getHeight() / 2;
+    	
+    	if(hackCount == 0) {
+    		isHacked();
+    	} else if (hackCount < 3) {
+    		
+    	} else {
+    		this.hacked = false;
+    		hackCount = 0;
+    	}
+    	
+    	
+    	if (y -cy >= H) {
+    		Random rand = new Random();
+        	hacker.relocate(gCarX, -100);
+        } else {
+        	hacker.relocate(x , y - cy);  
+        }
+    }
+    
+    private void isHacked() {
+    	double xDiff = gCarX - hackerX;
+    	double yDiff = gCarY - hackerY;
+    	if (xDiff > -20 && xDiff < 50) {
+    		if (yDiff > -60 && yDiff < 60) {
+    			this.hacked = true;
+    		}else {
+    			this.hacked = false;
+    		}
+    	}else {
+    		this.hacked = false;
+    	}
+    	
+    	
+    }
+    
     
     private boolean isCrashed() {
     	double xDiff = this.gCarX - this.bCarX;
@@ -326,18 +403,13 @@ public class Cars extends Application {
     	System.out.println(this.bCarX);
     	System.out.println(gCarY);
     	System.out.println(bCarY);
-    	if (xDiff > -60 && xDiff < 84) {
-    		if (yDiff > -120 && yDiff < 120) {
+    	if (xDiff > -36 && xDiff < 110) {
+    		if (yDiff > -120 && yDiff < 112) {
     			return true;
     		}
     	}
     	return false;
     }
-    
-    
-    
-    
-    
     
     
     
@@ -348,7 +420,7 @@ public class Cars extends Application {
     	Alert alert = new Alert(AlertType.WARNING);
     	alert.setTitle("GAME OVER!");
     	alert.setHeaderText("You lost the game! Try again.");
-    	alert.setContentText("You just crashed!");
+    	alert.setContentText("You just crashed! Your score was " + score + "!");
     	
     	alert.show();
     	
@@ -366,7 +438,7 @@ public class Cars extends Application {
     	Alert alert = new Alert(AlertType.WARNING);
     	alert.setTitle("GAME OVER!");
     	alert.setHeaderText("You lost the game! Try again.");
-    	alert.setContentText("You just went off the road!");
+    	alert.setContentText("You just went off the road! Your score was " + score + "!");
     	
     	alert.show();
     	
