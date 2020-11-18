@@ -1,6 +1,6 @@
-import java.io.FileInputStream;
+//import java.io.FileInputStream;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.TimeUnit;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -22,44 +22,29 @@ public class Cars extends Application {
 
     private static final double W = 512, H = 1024;
 
-    private static final String CAR_IMAGE =
-            "https://img.icons8.com/color/2x/f1-race-car-top-veiw.png";
+    private static final String CAR_IMAGE = "https://img.icons8.com/color/2x/f1-race-car-top-veiw.png";
     
-   
     private static final String BACK_IMAGE = "https://images-ext-1.discordapp.net/external/TPR7IrckC7Tc9gPIgofWzXsYJpm-VlRzChpaMJMffYU/https/www.ajaybadgujar.com/wp-content/uploads/2014/06/road.png?widt";
-    
-    private static final String BACK_IMAGE2 = "https://images-ext-1.discordapp.net/external/TPR7IrckC7Tc9gPIgofWzXsYJpm-VlRzChpaMJMffYU/https/www.ajaybadgujar.com/wp-content/uploads/2014/06/road.png?widt";
-    
-    private static final String GAME_OVER = "https://www.flaticon.com/premium-icon/icons/svg/2066/2066796.svg";
     
     private static final String BAD_CAR = "https://images-ext-1.discordapp.net/external/8m41qiXkILIWLUg495Ysx9OnVkKWDHdMcsnGnm1Urmc/https/img.icons8.com/officel/2x/truck-top-view.png";
     
     private static final String HACK = "https://icons.iconarchive.com/icons/iron-devil/ids-game-world/32/Danger-zone-icon.png";
     
-    private Image hackImage;
-    private Node hacker;
     
-    private boolean crashed = false;
+    private Image hackImage;
+    private Node hacker;   
+    
     private Image carImage;
     private Node  gCar;
-    
-    private Image backImage;
-    private Node back;
-    
-    private Image backImage2;
-    private Node back2;
-    
-    private Image backImage3;
-    private Node back3;
-    
-    private Image backImage4;
-    private Node back4;
     
     private Image badCar;
     private Node bCar;
     
-    private Image gameOver;
-    private Node over;
+    private Image backImage;
+    private Node back;
+    private Node back2;
+    private Node back3;
+    private Node back4;
     
     private int count = 0;
     private int count2 = 0;
@@ -68,8 +53,6 @@ public class Cars extends Application {
     
     private boolean hacked = false;
     private int hackCount = 0;
-    private int startHack;
-    private int endHack;
     
     private double gCarX;
     private double gCarY;
@@ -78,11 +61,14 @@ public class Cars extends Application {
     private double hackerX;
     private double hackerY;
     
+    private boolean crashed = false;
+    
     boolean running, goNorth, goSouth, goEast, goWest;
 
     @Override
     public void start(Stage stage) throws Exception {
     	
+    	instructions();
     	
     	carImage = new Image(CAR_IMAGE);
         gCar = new ImageView(carImage);
@@ -90,45 +76,31 @@ public class Cars extends Application {
         
         backImage = new Image(BACK_IMAGE);
         back = new ImageView(backImage);
-        
-        backImage2 = new Image(BACK_IMAGE);
+
         back2 = new ImageView(backImage);
-        
-        backImage3 = new Image(BACK_IMAGE);
+
         back3 = new ImageView(backImage);
-        
-        backImage4 = new Image(BACK_IMAGE);
+
         back4 = new ImageView(backImage);
-        
-        gameOver = new Image(GAME_OVER);
-        over = new ImageView(gameOver);
-        
+
         badCar = new Image(BAD_CAR);
         bCar = new ImageView(badCar);
         bCar.setRotate(90);
         
         hackImage = new Image(HACK);
         hacker = new ImageView(hackImage);
-        hacker.resize(5, 5);
-        
-        
-        
         
         Group root = new Group(back, back2, back3, hacker, gCar, bCar);
-        
-        
-        
+
+        //moving all the objects to its default positions
         moveGCarTo(W/2, 3 * H / 4);
         moveBgTo(0 , -H / 4);
         moveBg2To(0, H / 4);
         moveBg3To(0, 3* H / 4);
         moveBg4To(0, 5 * H/ 4);
-        moveOverTo(W, H);
         
-        
+        //the bad car and its hacker component moved to random starting position
         Random rand = new Random();
-   //     int rand_int1 = rand.nextInt(245) + 120; 
-    //    System.out.println(rand_int1);
         moveBCarTo(rand.nextInt(245) + 120,-100);
         moveHackerTo(rand.nextInt(245)+120, 0);
   
@@ -178,13 +150,16 @@ public class Cars extends Application {
                 if (goEast)  dx += 3;
                 if (goWest)  dx -= 3;
                 if (running) { dx *= 3; dy *= 3; }
-                if (hacked) { dx *= 3; dy *= 3; }
-
-
-                moveGCarBy(dx, dy);
+                
+                if (hacked) { 
+                	dx *= 3; dy *= 3; 
+                }   
+             
+                moveGCarBy(dx, dy); 
                 moveBgBy(dx,-dy);
                 moveBg2By(dx, -dy);      
                 moveBg3By(dx, -dy);   
+                moveBg4By(dx, -dy);  
                 moveBCarBy(0, -dy * 2);               
                 moveHackerBy(0, -dy);
                              
@@ -196,13 +171,13 @@ public class Cars extends Application {
         };
         
         		timer.start();
-        		
-        		
-       
+  
     }
     
 
     private void moveGCarBy(int dx, int dy) {
+    	//calls the function which changes the location of the driving car
+    	
         if (dx == 0 && dy == 0) return;
 
         final double cx = gCar.getBoundsInLocal().getWidth()  / 2;
@@ -219,6 +194,8 @@ public class Cars extends Application {
     }
     
     private void moveBgBy(int dx, int dy) {
+    	//calls the function which moves the background layer 1
+    	
         if (dx == 0 && dy == 0) return;
         
         if (dy < 0) return;
@@ -232,6 +209,8 @@ public class Cars extends Application {
     }
     
     private void moveBg2By(int dx, int dy) {
+    	//calls the function which moves the background layer 2
+    	
         if (dx == 0 && dy == 0) return;
 
         if (dy < 0) return;
@@ -245,6 +224,8 @@ public class Cars extends Application {
     }
     
     private void moveBg3By(int dx, int dy) {
+    	//calls the function which moves the background layer 3
+    	
         if (dx == 0 && dy == 0) return;
 
         if (dy < 0) return;
@@ -258,6 +239,8 @@ public class Cars extends Application {
     }
     
     private void moveBg4By(int dx, int dy) {
+    	//calls the function which moves the background layer 4
+    	
         if (dx == 0 && dy == 0) return;
 
         if (dy < 0) return;
@@ -272,6 +255,8 @@ public class Cars extends Application {
     
     
     private void moveBCarBy(int dx, int dy) {
+    	//calls the function which moves the bad car in the opposite direction
+    	
         if (dx == 0 && dy == 0) return;
         
         if (dy < 0) return;
@@ -288,6 +273,7 @@ public class Cars extends Application {
     }
     
     private void moveHackerBy(int dx, int dy) {
+    	//calls the function which moves the hacker component of the bad car
     	if (dx == 0 && dy == 0) return;
         
         if (dy < 0) return;
@@ -302,18 +288,22 @@ public class Cars extends Application {
 
         moveHackerTo(x, y);
     }
+    
+    
     private void moveGCarTo(double x, double y) {
+    	//moves the good car to the next location
+    	//the out of bounds accident event is checked here
+    	
+    	
         final double cx = gCar.getBoundsInLocal().getWidth()  / 2;
         final double cy = gCar.getBoundsInLocal().getHeight() / 2;
         
         	boolean accident = isOutOfBounds(x);
         	if (accident == true) {
+        		
         		try {
         			offTheRoad();
-				
-		//		System.exit(0);
         		} catch (InterruptedException e) {
-        			// TODO Auto-generated catch block
         			e.printStackTrace();
         		}
         	}
@@ -328,12 +318,9 @@ public class Cars extends Application {
     }
     
     private void moveBgTo(double x, double y) {
-       // final double cx = back.getBoundsInLocal().getWidth()  / 2;
+       // moves the background layer 1 to its next position
+    	
         final double cy = back.getBoundsInLocal().getHeight() / 2;
-
-        
-     //   if (y - cy >= 0 &&
-     //       y + cy <= H) {
         if (y -cy >= 0) {
         	back.relocate(0, -H / 2);
         } else {
@@ -342,7 +329,45 @@ public class Cars extends Application {
         }
     }
     
+    private void moveBg2To(double x, double y) {
+        // moves the background layer 2 to its next position
+    	
+         final double cy = back2.getBoundsInLocal().getHeight() / 2;
+         if (y -cy >= H/2 ) {
+         	back2.relocate(0, 0);
+         } else {
+         	back2.relocate(0 , y - cy);
+         	
+         }
+     }
+    
+    private void moveBg3To(double x, double y) {
+    	 // moves the background layer 3 to its next position
+         final double cy = back3.getBoundsInLocal().getHeight() / 2;
+
+         if (y -cy >= H ) {
+         	back3.relocate(0, H /2);
+         } else {
+         	back3.relocate(0 , y - cy);
+         	
+         }
+     }
+    
+    private void moveBg4To(double x, double y) {
+    	// moves the background layer 4 to its next position
+        final double cy = back4.getBoundsInLocal().getHeight() / 2;
+
+        if (y -cy >= 3*H/2) {
+        	back4.relocate(0, H);
+        } else {
+        	back4.relocate(0 , y - cy);
+        	
+        }
+    }
+    
     private void moveBCarTo(double x, double y)  {        
+    	//moves the bad car to its next position
+    	//the crashed event is checked here to see if the cars have collided
     	final double cy = bCar.getBoundsInLocal().getHeight() / 2;
     	count2 += 1;
         
@@ -352,7 +377,6 @@ public class Cars extends Application {
     			try {
 					crashed();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
     		}
@@ -369,63 +393,13 @@ public class Cars extends Application {
         	bCar.relocate(x , y - cy);  
         }
      }
-    
-    private void moveBg2To(double x, double y) {
-        // final double cx = back.getBoundsInLocal().getWidth()  / 2;
-         final double cy = back2.getBoundsInLocal().getHeight() / 2;
 
-      //   if (y - cy >= 0 &&
-      //       y + cy <= H) {
-         if (y -cy >= H/2 ) {
-         	back2.relocate(0, 0);
-         } else {
-         	back2.relocate(0 , y - cy);
-         	
-         }
-     }
-    
-    private void moveBg3To(double x, double y) {
-        
-         final double cy = back3.getBoundsInLocal().getHeight() / 2;
-
-      //   if (y - cy >= 0 &&
-      //       y + cy <= H) {
-         if (y -cy >= H ) {
-         	back3.relocate(0, H /2);
-         } else {
-         	back3.relocate(0 , y - cy);
-         	
-         }
-     }
-    
-    private void moveBg4To(double x, double y) {
-        
-        final double cy = back4.getBoundsInLocal().getHeight() / 2;
-
-     //   if (y - cy >= 0 &&
-     //       y + cy <= H) {
-        if (y -cy >= 3*H/2) {
-        	back4.relocate(0, H);
-        } else {
-        	back4.relocate(0 , y - cy);
-        	
-        }
-    }
-    
-    private void moveOverTo(double x, double y) {
-        over.relocate(x,y);
-      }
-    
-    private boolean isOutOfBounds(double x) {
-    	if (x > 384 || x < 128) {
-    		this.crashed = true;
-    		return true;
-    	}else {
-    		return false;
-    	}
-    }
     
     private void moveHackerTo(double x, double y) {
+    	//the hacker component of the bad car is being moved here to its next position
+    	//also checking if the car has been hacked or not
+    	
+    	
     	final double cy = hacker.getBoundsInLocal().getHeight() / 2;
     	
     	if (hackCount == 0) {
@@ -435,9 +409,7 @@ public class Cars extends Application {
     	} else {
     		hackCount = 0;
     		this.hacked = false;
-    	}
-    	
-    	
+    	}	
     	
     	if (y -cy >= H) {
     		Random rand = new Random();
@@ -450,7 +422,21 @@ public class Cars extends Application {
         }
     }
     
+    private boolean isOutOfBounds(double x) {
+    	//checks conditions if the car is off the road
+    	
+    	if (x > 384 || x < 128) {
+    		this.crashed = true;
+    		return true;
+    	}else {
+    		return false;
+    	}
+    }
+
+    
     private void isHacked() {
+    	//checks conditions if the car is hacked
+    	
     	double xDiff = gCarX - hackerX;
     	double yDiff = gCarY - hackerY;
     	if (xDiff > -20 && xDiff < 50) {
@@ -465,13 +451,16 @@ public class Cars extends Application {
     
     
     private boolean isCrashed() {
+    	//checks conditions if the cars have collided
+    	
     	double xDiff = this.gCarX - this.bCarX;
     	double yDiff = this.gCarY - this.bCarY;
     	
-    	System.out.println(this.gCarX);
+   /*	System.out.println(this.gCarX);
     	System.out.println(this.bCarX);
     	System.out.println(gCarY);
-    	System.out.println(bCarY);
+    	System.out.println(bCarY); */
+    	
     	if (xDiff > -36 && xDiff < 110) {
     		if (yDiff > -120 && yDiff < 112) {
     			return true;
@@ -484,6 +473,8 @@ public class Cars extends Application {
     
     
     private void crashed() throws InterruptedException{
+    	//display an alert if the car is crashed
+    	
     	this.crashed = true;
     	
     	Alert alert = new Alert(AlertType.WARNING);
@@ -502,6 +493,8 @@ public class Cars extends Application {
     }
     
     private void offTheRoad() throws InterruptedException{
+    	//display an alert if the car is off the road
+    	
     	this.crashed = true;
     	
     	Alert alert = new Alert(AlertType.WARNING);
@@ -520,6 +513,15 @@ public class Cars extends Application {
     	
     }
   
+    private void instructions() {
+    	//display instructions at the start of the game
+    	Alert alert = new Alert(AlertType.INFORMATION);
+    	alert.setTitle("INSTRUCTIONS");
+    	alert.setHeaderText("Avoid going off the road or hitting the on coming car!");
+    	alert.setContentText("Beware: Hitting the Yellow object will get your car hacked!");
+    	
+    	alert.showAndWait();
+    }
   
     public static void main(String[] args) { launch(args); }
 } 
